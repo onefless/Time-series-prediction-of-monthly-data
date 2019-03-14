@@ -1,0 +1,80 @@
+class decomposition_additive(object):
+    '''
+    original: df, n*1  ONLY MONTHLY DATA. Must not have missing months.
+    order: int, order for polymonial regression
+    Cycle: TBA
+    test_Data: df, n*1 Test date must be continueous with training.
+    metrics: str, 'rmse' TBA
+
+    
+    '''
+    def __init__(self,original,order = 2, cycle = None):
+        self.original = original
+        self.original_1d = original.values.ravel()
+        self.index = original.index
+        self.cycle = cycle
+        self.order = order
+        self.col_name = original.columns[0]
+        
+    def seasonal_component(self):
+        '''
+        Note: only 12 monthly data is return. Does not cover the whole spectrum.
+        '''
+        try:
+            np
+        except:
+            import numpy as np
+        try:
+            pd
+        except:
+            import pandas as pd
+        
+        coef = np.polyfit(np.arange(len(self.original)),self.original_1d,self.order)
+        poly_mdl = np.poly1d(coef)
+        trend = pd.Series(data = poly_mdl(np.arange(len(self.original))),index = self.index)
+
+        self.detrended = self.original.iloc[:,0] - trend
+        self.seasonal = self.detrended.groupby(by = self.detrended.index.month).mean()
+
+        self.seasonal_full = self.original.copy()
+        for i in self.seasonal.index:
+            self.seasonal_full.loc[self.seasonal_full.index.month == i,self.col_name] =self.seasonal.loc[i]
+        
+        return self.seasonal
+    
+    def trend_component(self):
+        self.seasonal_component()
+        for i in self.seasonal.index:
+            self.deseasonal = self.original.subtract(self.seasonal.loc[i],
+                                                     level = (self.original.index.month == i))
+    
+        coef = np.polyfit(np.arange(len(self.deseasonal)),self.original_1d,self.order)
+        self.poly_mdl = np.poly1d(coef) #polynominal model
+        self.trend = pd.Series(data = self.poly_mdl(np.arange(len(self.deseasonal))),index = self.index)
+        
+        return self.trend
+    
+    def fit(self):
+        self.trend_component()
+        
+    def predict(self,test_data, metrics = 'rmse'):
+        self.test_data = test_data
+        self.metrics = metrics.lower()
+
+        #seasonal test
+        if self.test_data.columns[0] != self.col_name:
+            self.test_data.rename(index=str,columns={self.test_data.columns[0]:self.col_name})
+        self.seasonal_full_test = self.test_data.copy()
+        for i in self.seasonal.index:
+            self.seasonal_full_test.loc[self.seasonal_full_test.index.month == i, self.col_name] = self.seasonal.loc[i]
+        #deseasonal test
+        fuck = self.test_data.values - self.seasonal_full_test.values
+
+        self.deseasonal_test = pd.Series(data = (self.test_data.values - self.seasonal_full_test.values).ravel(),index = self.test_data.index)
+
+        #trend test
+        poly_values = self.poly_mdl(np.arange(len(self.test_data)+len(self.original)))
+        self.trend_test = pd.Series(data = poly_values[-self.test_data.shape[0]:],index = self.test_data.index)
+        self.prediction = self.trend_test+self.seasonal_full_test.iloc[:,0]
+        return self.prediction
+        
