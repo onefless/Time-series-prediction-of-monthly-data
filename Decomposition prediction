@@ -14,7 +14,7 @@ class decomposition_additive(object):
         
     def seasonal_component(self):
         '''
-        Note: only 12 monthly data is return. Does not cover the whole spectrum.
+        Note: self.seasonal returns only 12 monthly data. self.seasonal_full contains all months.
         '''
         try:
             np
