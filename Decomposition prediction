@@ -175,10 +175,18 @@ class decomposition_additive(object):
             training_pred.plot(color='r',linestyle='-')
 #%%
 
+# Training and testing
 decomp = decomposition_additive()
 decomp.fit(train)
-pred_test = decomp.test(test)
+test_pred = decomp.test(test)
 
-decomp.plot_components(data = 'test')
-decomp.plot_test(data = 'training')
-prediction = decomp.predict(months = 120)
+# Prediction 
+prediction = decomp.predict(months = 36)
+
+# Extract components
+seasonal_component = decomp.seasonal_full
+trend_componenent = decomp.trend
+
+# Visualisation
+decomp.plot_components(data = 'training')
+decomp.plot_test(data = 'test')
