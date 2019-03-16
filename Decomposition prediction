@@ -154,6 +154,23 @@ class decomposition_additive(object):
             
             self.residual_test.plot(ax=ax[3], color='k', linestyle='-')
             ax[3].set_title('Residual plot')
+    
+    def plot_test(self,data = 'test'):
+        '''
+        arugments:
+            data: 'test' or 'training'
+        '''
+        try:
+            plt
+        except:
+            import matplotlib.pyplot as plt
+        if data == 'test':
+            self.test_data.plot(color='b',linestyle='-')
+            self.prediction_test.plot(color='r',linestyle='-')
+        if data == 'training':
+            self.original.plot(color='b',linestyle='-')
+            training_pred = pd.Series(data = (self.trend.values.ravel() + self.seasonal_full.values.ravel()),index = self.index)
+            training_pred.plot(color='r',linestyle='-')
 #%%
 
 decomp = decomposition_additive()
@@ -161,4 +178,5 @@ decomp.fit(train)
 pred_test = decomp.test(test)
 
 decomp.plot_components(data = 'test')
+decomp.plot_test(data = 'training')
 prediction = decomp.predict(months = 120)
