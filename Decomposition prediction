@@ -1,20 +1,23 @@
 class decomposition_additive(object):
     '''
-    original: df, n*1  ONLY MONTHLY DATA. Must not have missing months. Index must be Timestamp
-    order: int, order for polymonial regression
-    Cycle: TBA
-    test_Data: df, n*1 Test date must be continueous with training.
-    metrics: str, 'rmse' TBA
+    Apply additive decomposition model to evenly spaced monthly time series problem. It allows forecast and vishualisation.
     '''
     
     def __init__(self,order = 2, cycle = None):
- 
+        '''
+        Arguments:
+            order: int, order for polymonial regression
+            Cycle: TBA
+            metrics: str, 'rmse' TBA
+        '''
         self.cycle = cycle
         self.order = order
         
     def seasonal_component(self):
         '''
-        Note: self.seasonal returns only 12 monthly data. self.seasonal_full contains all months.
+        Output:
+            seasonal_full: Series, (12,). Seasonal component.
+        Note: self.seasonal returns only 12 monthly data. self.seasonal_full is the complete seasonal component.
         '''
         try:
             np
@@ -36,9 +39,13 @@ class decomposition_additive(object):
         for i in self.seasonal.index:
             self.seasonal_full.loc[self.seasonal_full.index.month == i,self.col_name] =self.seasonal.loc[i]
         
-        return self.seasonal
+        return self.seasonal_full
     
     def trend_component(self):
+        '''
+        Output:
+            trend: Series, (n,). Trend component. 
+        '''
         self.seasonal_component()
         for i in self.seasonal.index:
             self.deseasonal = self.original.subtract(self.seasonal.loc[i],
@@ -51,6 +58,10 @@ class decomposition_additive(object):
         return self.trend
     
     def fit(self,original):
+        '''
+        original: df, (n*1). ONLY MONTHLY DATA. Must not have missing months. Index must be Timestamp
+        '''
+        
         self.original = original
         self.original_1d = original.values.ravel()
         self.index = original.index
@@ -60,6 +71,13 @@ class decomposition_additive(object):
         
         
     def test(self,test_data, metrics = 'rmse'):
+        '''
+        Argument:
+            test_Data: df, (n*1). Test date must be continueous with training.
+        Output:
+            prediction_test: Series, (n,)
+        '''
+        
         self.test_data = test_data
         self.test_index = test_data.index
         self.metrics = metrics.lower()
@@ -83,7 +101,10 @@ class decomposition_additive(object):
     
     def predict(self,months = 36):
         '''
-        month: int, how many months to be predicted after original.
+        Arguments:
+            month: int, how many months to be predicted after original.
+        Output:
+            prediction: Series, (n,)
         '''
         from dateutil.relativedelta import relativedelta
         new_index = pd.date_range(self.index[-1]+relativedelta(months = 1),self.index[-1]+relativedelta(months = months),freq='MS')
@@ -95,13 +116,12 @@ class decomposition_additive(object):
         self.prediction = self.trend_pred + self.seasonal_full_pred
         return self.prediction
         
-            
-        
-        
     def plot_components(self,data = 'training'):
         '''
-        Credit: modified from the code by Marcel Scharth (Github: https://github.com/mscharth). 
-        data: either training or forecasted value
+        ***Credit: modified from the code by Marcel Scharth (Github: https://github.com/mscharth). 
+        Plot Plot original data, seasonal component, trend component and residual, also predicted values for 'test'.
+        Arguments:
+            data: 'training' or 'test', str. Which data to be plotted. 
         '''
         try:
             plt
