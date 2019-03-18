@@ -118,7 +118,7 @@ class decomposition_additive(object):
         self.prediction = self.trend_pred + self.seasonal_full_pred
         return self.prediction
         
-    def plot_components(self,data = 'training'):
+    def plot_components(self,data = 'training', figsize = (15,10)):
         '''
         ***Credit: modified from the code by Marcel Scharth (Github: https://github.com/mscharth). 
         Plot Plot original data, seasonal component, trend component and residual, also predicted values for 'test'.
@@ -130,7 +130,7 @@ class decomposition_additive(object):
         except:
             import matplotlib.pyplot as plt
         if data == 'training':
-            fig, ax = plt.subplots(4, sharex=True)
+            fig, ax = plt.subplots(4, sharex=True, figsize = figsize)
             self.original.plot(ax=ax[0],color='b', linestyle='-')
             ax[0].set_title('Original')
             
@@ -167,10 +167,10 @@ class decomposition_additive(object):
         except:
             import matplotlib.pyplot as plt
         if data == 'test':
-            self.test_data.plot(color='b',linestyle='-')
+            self.test_data.plot(color='b',linestyle='-',figsize = (15,10))
             self.prediction_test.plot(color='r',linestyle='-')
         if data == 'training':
-            self.original.plot(color='b',linestyle='-')
+            self.original.plot(color='b',linestyle='-',figsize = (15,10))
             training_pred = pd.Series(data = (self.trend.values.ravel() + self.seasonal_full.values.ravel()),index = self.index)
             training_pred.plot(color='r',linestyle='-')
 #%%
