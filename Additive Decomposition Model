@@ -97,7 +97,7 @@ class decomposition_additive(object):
         self.trend_test = pd.Series(data = poly_values[-self.test_data.shape[0]:],index = self.test_index)
         self.prediction_test = self.trend_test+self.seasonal_full_test.iloc[:,0]
         self.residual_test = pd.Series(data = (self.test_data.values.ravel() - self.seasonal_full_test.values.ravel() - self.trend_test.values.ravel()),index = self.test_index)
-        rmse_test = np.sqrt(((self.prediction_test.values - self.test_data.values) ** 2).mean())
+        rmse_test = np.sqrt(((self.prediction_test.values.ravel() - self.test_data.values.ravel()) ** 2).mean())
         print('The test RMSE is:{}'.format(rmse_test))
         return self.prediction_test
     
