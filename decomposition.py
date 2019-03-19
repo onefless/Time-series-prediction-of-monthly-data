@@ -42,11 +42,21 @@ class tt_split(object):
 #train,test = t.split(data)
 
 #%%
+try:
+    np
+except:
+    import numpy as np
+try:
+    pd
+except:
+    import pandas as pd   
+
 class decomposition_additive(object):
     '''
     Apply additive decomposition model to evenly spaced monthly time series problem. It allows forecast and vishualisation.
     '''
     
+
     def __init__(self,order = 2, cycle = None):
         '''
         Arguments:
@@ -63,15 +73,8 @@ class decomposition_additive(object):
             seasonal_full: Series, (12,). Seasonal component.
         Note: self.seasonal returns only 12 monthly data. self.seasonal_full is the complete seasonal component.
         '''
-        try:
-            np
-        except:
-            import numpy as np
-        try:
-            pd
-        except:
-            import pandas as pd
-        
+        import numpy as np
+        import pandas as pd
         coef = np.polyfit(np.arange(len(self.original)),self.original_1d,self.order)
         poly_mdl = np.poly1d(coef)
         trend = pd.Series(data = poly_mdl(np.arange(len(self.original))),index = self.index)
@@ -94,7 +97,7 @@ class decomposition_additive(object):
         for i in self.seasonal.index:
             self.deseasonal = self.original.subtract(self.seasonal.loc[i],
                                                      level = (self.original.index.month == i))
-    
+#        import numpy as np
         coef = np.polyfit(np.arange(len(self.deseasonal)),self.original_1d,self.order)
         self.poly_mdl = np.poly1d(coef) #polynominal model
         self.trend = pd.Series(data = self.poly_mdl(np.arange(len(self.deseasonal))),index = self.index)
@@ -175,7 +178,7 @@ class decomposition_additive(object):
         except:
             import matplotlib.pyplot as plt
         if data == 'training':
-            fig, ax = plt.subplots(4, sharex=True)
+            fig, ax = plt.subplots(4, sharex=True,figsize = (15,10))
             self.original.plot(ax=ax[0],color='b', linestyle='-')
             ax[0].set_title('Original')
             
@@ -188,7 +191,7 @@ class decomposition_additive(object):
             self.residual.plot(ax=ax[3], color='k', linestyle='-')
             ax[3].set_title('Residual plot')
         if data == 'test':
-            fig, ax = plt.subplots(4, sharex=True)
+            fig, ax = plt.subplots(4, sharex=True,figsize = (15,10))
             self.test_data.plot(ax=ax[0],color='b', linestyle='-')
             self.prediction_test.plot(ax=ax[0],color='r', linestyle='-')
             ax[0].set_title('Test data')
@@ -202,21 +205,28 @@ class decomposition_additive(object):
             self.residual_test.plot(ax=ax[3], color='k', linestyle='-')
             ax[3].set_title('Residual plot')
             
-    def plot_test(self,data = 'test'):
+    def plot_test(self,data = 'test',figsize = (15,10)):
         try:
             plt
         except:
             import matplotlib.pyplot as plt
         if data == 'test':
-            self.test_data.plot(color='b',linestyle='-')
+            self.test_data.plot(color='b',linestyle='-',figsize = figsize)
             self.prediction_test.plot(color='r',linestyle='-')
         if data == 'training':
-            self.original.plot(color='b',linestyle='-')
+            self.original.plot(color='b',linestyle='-',figsize = figsize)
             training_pred = pd.Series(data = (self.trend.values.ravel() + self.seasonal_full.values.ravel()),index = self.index)
             training_pred.plot(color='r',linestyle='-')
             
 #%%
-
+try:
+    np
+except:
+    import numpy as np
+try:
+    pd
+except:
+    import pandas as pd   
 class decomposition_multiplicative(object):
     
     def __init__(self,order = 2, cycle = None):
@@ -235,14 +245,6 @@ class decomposition_multiplicative(object):
             seasonal_full: Series, (12,). Seasonal component.
         Note: self.seasonal returns only 12 monthly data. self.seasonal_full is the complete seasonal component.
         '''
-        try:
-            np
-        except:
-            import numpy as np
-        try:
-            pd
-        except:
-            import pandas as pd
         
         coef = np.polyfit(np.arange(len(self.original)),self.original_1d,self.order)
         poly_mdl = np.poly1d(coef)
@@ -347,7 +349,7 @@ class decomposition_multiplicative(object):
         except:
             import matplotlib.pyplot as plt
         if data == 'training':
-            fig, ax = plt.subplots(4, sharex=True)
+            fig, ax = plt.subplots(4, sharex=True,figsize = (15,10))
             self.original.plot(ax=ax[0],color='b', linestyle='-')
             ax[0].set_title('Original')
             
@@ -360,7 +362,7 @@ class decomposition_multiplicative(object):
             self.residual.plot(ax=ax[3], color='k', linestyle='-')
             ax[3].set_title('Residual plot')
         if data == 'test':
-            fig, ax = plt.subplots(4, sharex=True)
+            fig, ax = plt.subplots(4, sharex=True,figsize = (15,10))
             self.test_data.plot(ax=ax[0],color='b', linestyle='-')
             self.prediction_test.plot(ax=ax[0],color='r', linestyle='-')
             ax[0].set_title('Test data')
@@ -374,15 +376,15 @@ class decomposition_multiplicative(object):
             self.residual_test.plot(ax=ax[3], color='k', linestyle='-')
             ax[3].set_title('Residual plot')
     
-    def plot_test(self,data = 'test'):
+    def plot_test(self,data = 'test',figsize = (15,10)):
         try:
             plt
         except:
             import matplotlib.pyplot as plt
         if data == 'test':
-            self.test_data.plot(color='b',linestyle='-')
+            self.test_data.plot(color='b',linestyle='-',figsize = figsize)
             self.prediction_test.plot(color='r',linestyle='-')
         if data == 'training':
-            self.original.plot(color='b',linestyle='-')
+            self.original.plot(color='b',linestyle='-',figsize = figsize)
             training_pred = pd.Series(data = (self.trend.values.ravel() + self.seasonal_full.values.ravel()),index = self.index)
             training_pred.plot(color='r',linestyle='-')
