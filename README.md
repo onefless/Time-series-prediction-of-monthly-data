@@ -1,7 +1,8 @@
 # Time-series-prediction-of-monthly-data
 Provides the code to implement additive and multiplicative decompositoin model to monthly time series for forecast, testing and visualisation. 
 
-#### [Tutorial](https://github.com/onefless/Time-series-prediction-of-monthly-data/blob/master/Tutorial.ipynb) is provided.
+#### [Tutorial](https://github.com/onefless/Time-series-prediction-of-monthly-data/blob/master/Tutorial.ipynb) 
+Walkthough with Australian tourists data.
 
 #### Download [Module](https://github.com/onefless/Time-series-prediction-of-monthly-data/blob/master/decomposition.py)
 Sample demonstration:
