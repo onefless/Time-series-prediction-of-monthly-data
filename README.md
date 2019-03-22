@@ -21,7 +21,7 @@ Walkthough with Australian tourists data.
 Original data
 ![Original](https://github.com/onefless/Time-series-prediction-of-monthly-data/blob/master/Plots/Original.png?raw=true)
 
-Decomposition components
+Decomposed components
 ![components](https://github.com/onefless/Time-series-prediction-of-monthly-data/blob/master/Plots/multi%20%20components.png?raw=true)
 
 Final prediction
